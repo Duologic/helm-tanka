@@ -18,7 +18,10 @@ Typical usage:
 
    $ helm create mychart
    $ mkdir -p mychart/jsonnet
-   $ edit mychart/jsonnet/main.jsonnet
+   $ cd mychart/jsonnet
+   $ jb init
+   $ edit main.jsonnet
+   $ cd ../..
    $ helm package mychart
    $ helm install ./mychart-0.1.0.tgz 
 
