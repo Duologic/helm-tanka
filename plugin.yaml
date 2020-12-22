@@ -2,4 +2,9 @@ name: "tanka"
 version: "0.0.1"
 description: "Provide Tanka support to Helm"
 usage: "tanka"
+usage: |-
+  This plugin provides integration with the Tanka project.
+
+  It provides Tanka integration with Helm, generating Helm
+  templates from jsonnet source.
 command: "$HELM_PLUGIN_DIR/tanka.sh"
