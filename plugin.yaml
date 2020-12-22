@@ -1,0 +1,5 @@
+name: "tanka"
+version: "0.0.1"
+description: "Provide Tanka support to Helm"
+usage: "tanka"
+command: "$HELM_PLUGIN_DIR/tanka.sh"
