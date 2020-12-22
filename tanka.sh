@@ -22,7 +22,7 @@ Typical usage:
    $ jb init
    $ edit main.jsonnet
    $ cd ../..
-   $ helm package mychart
+   $ helm tanka package mychart
    $ helm install ./mychart-0.1.0.tgz 
 
 EOF
