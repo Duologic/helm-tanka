@@ -74,11 +74,11 @@ $ touch main.jsonnet
 ```
 
 Now edit the `main.jsonnet`, Tanka expects an [inline `tanka.dev/Environment`](https://tanka.dev/inline-environments#inline-environments) 
-object and this plugin provides the `values.yaml` through a top-level function:
+object and this plugin provides the `values.yaml` through external variables:
 
 ```jsonnet
-function(yaml) { // top-level function
-  local values = std.native('parseYaml')(yaml)[0],
+{
+  local values = std.native('parseYaml')(std.extVar('yaml'))[0],
   apiVersion: 'tanka.dev/v1alpha1',
   kind: 'Environment',
   metadata: {

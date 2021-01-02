@@ -1,6 +1,5 @@
-function(yaml) {
-  local values = std.native('parseYaml')(yaml)[0],
-  values: values,
+{
+  local values = std.native('parseYaml')(std.extVar('yaml'))[0],
   apiVersion: 'tanka.dev/v1alpha1',
   kind: 'Environment',
   metadata: {

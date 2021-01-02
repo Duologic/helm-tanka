@@ -36,13 +36,13 @@ bundler() {
 
 show() {
   bundler $1
-  tk show --tla-code yaml="(importstr '$1/values.yaml')" $1/jsonnet
+  tk show --ext-code yaml="(importstr '$1/values.yaml')" $1/jsonnet
 }
 
 build() {
   bundler $1
   rm -rf $1/templates/*
-  tk export --tla-code yaml="(importstr '$1/values.yaml')" $1/jsonnet $1/templates
+  tk export --ext-code yaml="(importstr '$1/values.yaml')" $1/jsonnet $1/templates 
 }
 
 package() {

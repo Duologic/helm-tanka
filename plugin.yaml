@@ -1,7 +1,6 @@
 name: "tanka"
-version: "0.0.1"
+version: "0.0.2"
 description: "Provide Tanka support to Helm"
-usage: "tanka"
 usage: |-
   This plugin provides integration with the Tanka project.
 
