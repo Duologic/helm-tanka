@@ -1,0 +1,4 @@
+prometheus_example/jsonnet/jsonnetfile.lock.json
+prometheus_example/jsonnet/vendor/
+prometheus_example/*.tgz
+prometheus_example/templates/

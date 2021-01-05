@@ -31,20 +31,22 @@ It provides Tanka integration with Helm, generating Helm
 templates from jsonnet source.
 
 Available Commands:
+  create    Create initial setup
+  fetch   Fetch a Jsonnet library (on first setup)
   show    Show the generated Kubernetes manifests.
   build   Build the jsonnet files into a Kubernetes manifests, but don't package it.
   package Generated a packaged Helm chart.
 
+Fetch usage:
+
+   $ helm tanka fetch <url> <entrypoint>
+
 Typical usage:
 
-   $ helm create mychart
-   $ mkdir -p mychart/jsonnet
-   $ cd mychart/jsonnet
-   $ jb init
-   $ edit main.jsonnet
-   $ cd ../..
-   $ helm tanka package mychart
-   $ helm install ./mychart-0.1.0.tgz 
+   $ helm tanka create prometheus
+   $ helm tanka fetch prometheus github.com/grafana/jsonnet-libs/prometheus prometheus/prometheus.libsonnet
+   $ helm tanka package prometheus
+   $ helm install ./prometheus-0.1.0.tgz 
 
 ```
 
@@ -55,65 +57,63 @@ Also see included example.
 Get started by creating a standard chart:
 
 ```console
-$ helm create mychart
+$ helm tanka create prometheus
 ```
 
-Inside of your chart, you will need to create a `jsonnet/` directory, which will be the home for your jsonnet files.
+You can populate your `values.yaml` with the required data:
 
 ```console
-$ mkdir -p mychart/jsonnet
+$ cat prometheus/values.yaml
+
+namespace: 'mynamespace'
 ```
 
-Then initialize the jsonnet directory with `jb` and create a `main.jsonnet` file. Tanka treats `main.jsonnet` as the
-entry point and uses the `jsonnetfile.json` as the relative entrypoint for finding libraries.
+Then fetch the library you want to use in this Helm chart:
 
 ```console
-$ cd mychart/jsonnet
-$ jb init
-$ touch main.jsonnet
+$ helm tanka fetch prometheus github.com/grafana/jsonnet-libs/prometheus prometheus/prometheus.libsonnet
 ```
 
-Now edit the `main.jsonnet`, Tanka expects an [inline `tanka.dev/Environment`](https://tanka.dev/inline-environments#inline-environments) 
-object and this plugin provides the `values.yaml` through external variables:
+After this you can edit the `main.jsonnet` in case you crave more advanced use cases:
 
 ```jsonnet
+local yaml = std.native('parseYaml')(std.extVar('yaml'))[0];
 {
-  local values = std.native('parseYaml')(std.extVar('yaml'))[0],
   apiVersion: 'tanka.dev/v1alpha1',
   kind: 'Environment',
   metadata: {
-    name: 'mychart',
+    name: '.',
   },
   spec: {
-    namespace: values.namespace,
+    apiServer: '',
+    namespace: yaml.namespace,
+    resourceDefaults: {},
+    expectVersions: {},
   },
-  data: {
-    /* your kubernetes objects go here */
-  }
+  data:
+    (import 'prometheus/prometheus.libsonnet')
+    + { _config+: yaml },
 }
 ```
 
-You can now populate your `values.yaml` with the required data:
-
-```console
-$ cat mychart/values.yaml
-
----
-namespace: 'default'
-```
 
 ### Testing Your Chart
 
 To test that your chart is working correctly, use the `helm tanka show` command:
 
 ```console
-$ helm tanka show ./mychart/
-apiVersion: apps/v1
-kind: Deployment
+$ helm tanka show ./prometheus/
+
+apiVersion: v1
+kind: ServiceAccount
 metadata:
-  name: nginx-deployment
-  namespace: default
-spec:
+  name: prometheus
+  namespace: mynamespace
+---
+apiVersion: v1
+data:
+  alerts.rules: |
+    groups:
 
 # ...
 ```
@@ -123,30 +123,37 @@ spec:
 The first step is to create a chart package, and then install it:
 
 ```console
-$ helm tanka package ./mychart
-Successfully packaged chart and saved it to: ./mychart-0.1.0.tgz
+$ helm tanka package ./prometheus
+Successfully packaged chart and saved it to: ./prometheus-0.1.0.tgz
 ```
 
 
 At this point, you can now easily install this package using the regular Helm commands:
 
 ```console
-$ helm install ./mychart-0.1.0.tgz
+$ helm install ./prometheus-0.1.0.tgz
 ```
 
-> TIP: You can also use `helm install --dry-run --debug ./mychart-0.1.0.tgz` to run a test install.
+> TIP: You can also use `helm install --dry-run --debug ./prometheus-0.1.0.tgz` to run a test install.
 
 ### Installing without Packaging
 
 It is possible to install a chart without first packaging it. In this method, we build the Kubernetes manifests but do not package the chart:
 
 ```console
-$ helm ksonnet build ./mychart
-./mychart/templates/deployment.yaml
+$ helm tanka build ./prometheus
+./prometheus/templates/apps-v1.StatefulSet-prometheus.yaml
+./prometheus/templates/rbac.authorization.k8s.io-v1beta1.ClusterRoleBinding-prometheus.yaml
+./prometheus/templates/rbac.authorization.k8s.io-v1beta1.ClusterRole-prometheus.yaml
+./prometheus/templates/v1.ConfigMap-prometheus-alerts.yaml
+./prometheus/templates/v1.ConfigMap-prometheus-config.yaml
+./prometheus/templates/v1.ConfigMap-prometheus-recording.yaml
+./prometheus/templates/v1.ServiceAccount-prometheus.yaml
+./prometheus/templates/v1.Service-prometheus.yaml
 ```
 
 This tells us that it has built the manifest, but has not packaged it. We can still use Helm to install it, though:
 
 ```console
-$ helm install ./mychart
+$ helm install ./prometheus
 ```
