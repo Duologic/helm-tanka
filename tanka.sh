@@ -85,6 +85,9 @@ build() {
   bundler $1
   rm -rf $1/templates/*
   tk export --ext-code yaml="(importstr '$1/values.yaml')" $1/jsonnet $1/templates 
+  for f in $(find $1/templates/*.yaml); do
+      sed -i 's/\({{\|}}\)/{{ "$1" }}/g' $f
+  done
 }
 
 package() {

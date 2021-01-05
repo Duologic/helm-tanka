@@ -74,7 +74,7 @@ Then fetch the library you want to use in this Helm chart:
 $ helm tanka fetch prometheus github.com/grafana/jsonnet-libs/prometheus prometheus/prometheus.libsonnet
 ```
 
-After this you can edit the `main.jsonnet` in case you crave more advanced use cases:
+After this you can edit the `prometheus/jsonnet/main.jsonnet` in case you crave more advanced use cases:
 
 ```jsonnet
 local yaml = std.native('parseYaml')(std.extVar('yaml'))[0];
