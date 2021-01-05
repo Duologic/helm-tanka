@@ -92,6 +92,13 @@ package() {
   helm package $1
 }
 
+args() {
+  if [ $1 -lt $2 ]; then
+    echo "===> ERROR: Missing required arguments. Try 'helm tanka help'"
+    exit 1
+  fi
+}
+
 if [[ $# < 1 ]]; then
   echo "===> ERROR: Subcommand required. Try 'helm tanka help'"
   exit 1
@@ -112,7 +119,6 @@ if [[ "" == $TANKA ]]; then
   exit 1
 fi
 
-
 case "${1:-"help"}" in
   "package")
     package $2
@@ -124,12 +130,14 @@ case "${1:-"help"}" in
     build $2
     ;;
   "fetch")
+    args $# 4
     fetch $2 $3 $4
     ;;
   "create")
     create $2
     ;;
   "test")
+    args $# 3
     compare $2 "$3"
     ;;
   "help")
