@@ -59,7 +59,7 @@ fetch(){
   cd $1/jsonnet
   jb install $2
   sed -i "s/ data: .*/data: \n(import '${3//\//\\/}')\n+{ _config+: yaml }/" main.jsonnet
-  jsonnetfmt -i main.jsonnet
+  tk fmt main.jsonnet
   cd -
 }
 
