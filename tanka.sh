@@ -71,20 +71,20 @@ bundler() {
 
 show() {
   bundler $1
-  /usr/bin/tk show --ext-code yaml="(importstr '$1/values.yaml')" $1/jsonnet
+  tk show --ext-code yaml="(importstr '$1/values.yaml')" $1/jsonnet
 }
 
 ## for testing purposes
 compare() {
   bundler $1
-  OUT=$(/usr/bin/tk show --dangerous-allow-redirect --ext-code yaml="(importstr '$1/values.yaml')" $1/jsonnet)
+  OUT=$(tk show --dangerous-allow-redirect --ext-code yaml="(importstr '$1/values.yaml')" $1/jsonnet)
   test "${OUT}" = "${2}"
 }
 
 build() {
   bundler $1
   rm -rf $1/templates/*
-  /usr/bin/tk export --ext-code yaml="(importstr '$1/values.yaml')" $1/jsonnet $1/templates 
+  tk export --ext-code yaml="(importstr '$1/values.yaml')" $1/jsonnet $1/templates 
 }
 
 package() {
