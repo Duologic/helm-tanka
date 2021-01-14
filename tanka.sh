@@ -58,7 +58,7 @@ EOF
 fetch(){
   cd $1/jsonnet
   jb install $2
-  import=$(basename $2)/${3}
+  import=$(basename $2 | sed 's/@.*$//')/${3}
   sed -i "s/ data: .*/data: \n(import '${import//\//\\/}')\n+{ _config+: yaml }/" main.jsonnet
   tk fmt main.jsonnet
   cd -
