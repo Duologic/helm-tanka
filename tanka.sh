@@ -23,7 +23,7 @@ Fetch usage:
 Typical usage:
 
    $ helm tanka create prometheus
-   $ helm tanka fetch prometheus github.com/grafana/jsonnet-libs/prometheus prometheus/prometheus.libsonnet
+   $ helm tanka fetch prometheus github.com/grafana/jsonnet-libs/prometheus prometheus.libsonnet
    $ helm tanka package prometheus
    $ helm install ./prometheus-0.1.0.tgz 
 
@@ -58,7 +58,8 @@ EOF
 fetch(){
   cd $1/jsonnet
   jb install $2
-  sed -i "s/ data: .*/data: \n(import '${3//\//\\/}')\n+{ _config+: yaml }/" main.jsonnet
+  import=$(basename $2)/${3}
+  sed -i "s/ data: .*/data: \n(import '${import//\//\\/}')\n+{ _config+: yaml }/" main.jsonnet
   tk fmt main.jsonnet
   cd -
 }
