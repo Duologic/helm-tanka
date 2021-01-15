@@ -4,6 +4,8 @@ A Helm plugin for rendering Jsonnet into Helm charts with Tanka.
 
 Heavily inspired by https://github.com/technosophos/helm-ksonnet.
 
+Test.
+
 ## Installation
 
 Prerequisites:
