@@ -6,44 +6,6 @@ metadata:
 ---
 apiVersion: v1
 data:
-  alerts.rules: |
-    groups:
-      - name: prometheus-extra
-        rules:
-          - alert: PromScrapeFailed
-            annotations:
-                message: Prometheus failed to scrape a target {{ $labels.job }} / {{ $labels.instance
-                    }}
-            expr: |
-                up != 1
-            for: 15m
-            labels:
-                severity: warning
-          - alert: PromScrapeFlapping
-            annotations:
-                message: Prometheus target flapping {{ $labels.job }} / {{ $labels.instance
-                    }}
-            expr: |
-                avg_over_time(up[5m]) < 1
-            for: 15m
-            labels:
-                severity: warning
-          - alert: PromScrapeTooLong
-            annotations:
-                message: '{{ $labels.job }} / {{ $labels.instance }} is taking too long
-                    to scrape ({{ printf "%.1f" $value }}s)'
-            expr: |
-                scrape_duration_seconds > 60
-            for: 15m
-            labels:
-                severity: warning
-kind: ConfigMap
-metadata:
-  name: prometheus-alerts
-  namespace: mynamespace
----
-apiVersion: v1
-data:
   prometheus.yml: |
     global:
         scrape_interval: 15s
@@ -56,16 +18,7 @@ metadata:
   name: prometheus-config
   namespace: mynamespace
 ---
-apiVersion: v1
-data:
-  recording.rules: |
-    {}
-kind: ConfigMap
-metadata:
-  name: prometheus-recording
-  namespace: mynamespace
----
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: prometheus
@@ -87,7 +40,7 @@ rules:
   verbs:
   - get
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: prometheus
@@ -124,6 +77,7 @@ metadata:
   name: prometheus
   namespace: mynamespace
 spec:
+  podManagementPolicy: Parallel
   replicas: 1
   selector:
     matchLabels:
@@ -146,7 +100,7 @@ spec:
         - --web.route-prefix=/prometheus/
         - --storage.tsdb.path=/prometheus/data
         - --storage.tsdb.wal-compression
-        image: prom/prometheus:v2.23.0
+        image: prom/prometheus:v2.28.1
         imagePullPolicy: IfNotPresent
         name: prometheus
         ports:
@@ -164,10 +118,6 @@ spec:
           name: prometheus-data
         - mountPath: /etc/prometheus
           name: prometheus-config
-        - mountPath: /etc/prometheus/alerts
-          name: prometheus-alerts
-        - mountPath: /etc/prometheus/recording
-          name: prometheus-recording
       - args:
         - -v
         - -t
@@ -186,10 +136,6 @@ spec:
         volumeMounts:
         - mountPath: /etc/prometheus
           name: prometheus-config
-        - mountPath: /etc/prometheus/alerts
-          name: prometheus-alerts
-        - mountPath: /etc/prometheus/recording
-          name: prometheus-recording
       securityContext:
         fsGroup: 2000
         runAsNonRoot: true
@@ -199,12 +145,6 @@ spec:
       - configMap:
           name: prometheus-config
         name: prometheus-config
-      - configMap:
-          name: prometheus-alerts
-        name: prometheus-alerts
-      - configMap:
-          name: prometheus-recording
-        name: prometheus-recording
   updateStrategy:
     type: RollingUpdate
   volumeClaimTemplates:

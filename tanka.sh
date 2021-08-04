@@ -42,10 +42,9 @@ create() {
   tk env add -i .
 
   ## install kubernetes libraries
-  jb install github.com/jsonnet-libs/k8s-alpha/1.18
+  jb install github.com/jsonnet-libs/k8s-libsonnet/1.18@main
   cat <<EOF > k.libsonnet
-(import 'github.com/jsonnet-libs/k8s-alpha/1.18/main.libsonnet')
-+ (import 'github.com/jsonnet-libs/k8s-alpha/1.18/extensions/kausal-shim.libsonnet')
+(import 'github.com/jsonnet-libs/k8s-libsonnet/1.18/main.libsonnet')
 EOF
 
   ## ensure namespace is set

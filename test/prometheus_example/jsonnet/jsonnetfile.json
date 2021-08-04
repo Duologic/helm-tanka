@@ -8,16 +8,16 @@
           "subdir": "prometheus"
         }
       },
-      "version": "ca37710"
+      "version": "00795013f5975f518a0a3de99253f9d5590271c8"
     },
     {
       "source": {
         "git": {
-          "remote": "https://github.com/jsonnet-libs/k8s-alpha.git",
+          "remote": "https://github.com/jsonnet-libs/k8s-libsonnet.git",
           "subdir": "1.18"
         }
       },
-      "version": "master"
+      "version": "main"
     }
   ],
   "legacyImports": true
