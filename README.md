@@ -9,8 +9,8 @@ Heavily inspired by https://github.com/technosophos/helm-ksonnet.
 Prerequisites:
 
 * [jsonnet-bundler](https://github.com/jsonnet-bundler/jsonnet-bundler/)>=0.4.0
-* [tanka](https://tanka.dev/)>=0.13.0
-* [helm](https://helm.sh/)>=3.4 (tested with version 3.4.1)
+* [tanka](https://tanka.dev/)>=0.17.1
+* [helm](https://helm.sh/)>=3.4 (tested with version 3.6.2)
 
 Install the Helm plugin:
 
